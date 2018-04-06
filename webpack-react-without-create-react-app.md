@@ -4,7 +4,7 @@
 
 本人正好看了一些相关资料，这里做为笔记记录一下如何从零开始用 `webpack` 搭建一个 `react` 的项目。我默认你已经在电脑上装好了 `nodejs`，并且有基本的命令行相关知识。
 
-> 本文的示例代码可以在 https://github.com/richard-chen-1985/webpack-react-start 中找到
+> 本文的示例代码可以在 https://github.com/richard-chen-1985/webpack-react-startup 中找到
 
 ## 创建项目目录
 
