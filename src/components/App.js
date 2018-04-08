@@ -1,9 +1,14 @@
 import React, { Component } from 'react'
 
+const logo = require('@static/img/logo.svg')
+
 export default class App extends Component {
   render() {
     return (
-      <div>Webpack React Startup</div>
+      <div>
+        <img src={logo} width="150" height="150" />
+        <p>Webpack React Startup</p>
+      </div>
     )
   }
 }

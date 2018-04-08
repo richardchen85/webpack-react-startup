@@ -1,7 +1,10 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const argv = require('minimist')(process.argv.slice(0))
 const mockServer = require('./mock/server')
+
+const production = argv.mode === 'production'
 
 module.exports = {
   // 让 webpack 知道以哪个模块为入口，做依赖收集
@@ -14,17 +17,32 @@ module.exports = {
   // 具体参考 https://webpack.js.org/concepts/#output
   output: {
     path: path.join(__dirname, '/dist'),
-    filename: '[name].js'
+    filename: 'js/[name].js',
+    publicPath: production ? '//static.360buyimg.com/' : ''
+  },
+  resolve: {
+    alias: {
+      '@static': path.resolve(__dirname, 'src/static'),
+    }
   },
   module: {
-    // 使用 babel-loader 编译 es6/7/8 和 jsx 语法
-    // 注意：这里没有配置 preset，而是在 .babelrc 文件里面配置
     rules: [
+      // 使用 babel-loader 编译 es6/7/8 和 jsx 语法
+      // 注意：这里没有配置 preset，而是在 .babelrc 文件里面配置
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader'
+        }
+      },
+      {
+        test: /.(png|jpg|svg)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: 'static/img/[name].[ext]'
+          }
         }
       }
     ]
