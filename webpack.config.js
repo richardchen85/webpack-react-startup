@@ -19,10 +19,11 @@ module.exports = {
   output: {
     path: path.join(__dirname, '/dist'),
     filename: 'js/[name].js',
-    publicPath: production ? '//static.360buyimg.com/' : ''
+    publicPath: production ? '//static.360buyimg.com/' : '/'
   },
   resolve: {
     alias: {
+      // 别名方便引入资源，如：background: url('~@static/img/logo.svg')
       '@static': path.resolve(__dirname, 'src/static'),
     }
   },
@@ -48,11 +49,10 @@ module.exports = {
       },
       {
         test: /.css$/,
-        // use: ExtractTextPlugin.extract({
-        //   fallback: "style-loader",
-        //   use: "css-loader"
-        // })
-        use: [ 'style-loader', 'css-loader' ]
+        use: ExtractTextPlugin.extract({
+          fallback: 'style-loader',
+          use: 'css-loader'
+        })
       }
     ]
   },
@@ -69,7 +69,7 @@ module.exports = {
       filename: 'about.html',
       chunks: ['commons', 'about']
     }),
-    //new ExtractTextPlugin("static/css/[name].css")
+    new ExtractTextPlugin("static/css/[name].css")
   ],
   optimization: {
     // 具体参考：https://webpack.js.org/plugins/split-chunks-plugin/

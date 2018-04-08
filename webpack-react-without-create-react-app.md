@@ -249,7 +249,7 @@ module.exports = {
   output: {
     // 这里 filename 有所改变，[name] 表示 entry 里面的 key
     // 表示每个页面的 bundle 文件以自己的名称命名
-    filename: '[name].js'
+    filename: 'js/[name].js'
   },
   plugins: [
     // index 页面
