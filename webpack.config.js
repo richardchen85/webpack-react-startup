@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
 const argv = require('minimist')(process.argv.slice(0))
 const mockServer = require('./mock/server')
 
@@ -44,6 +45,14 @@ module.exports = {
             name: 'static/img/[name].[ext]'
           }
         }
+      },
+      {
+        test: /.css$/,
+        // use: ExtractTextPlugin.extract({
+        //   fallback: "style-loader",
+        //   use: "css-loader"
+        // })
+        use: [ 'style-loader', 'css-loader' ]
       }
     ]
   },
@@ -59,7 +68,8 @@ module.exports = {
       template: './src/pages/about.html',
       filename: 'about.html',
       chunks: ['commons', 'about']
-    })
+    }),
+    //new ExtractTextPlugin("static/css/[name].css")
   ],
   optimization: {
     // 具体参考：https://webpack.js.org/plugins/split-chunks-plugin/
