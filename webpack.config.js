@@ -43,7 +43,7 @@ module.exports = {
         use: {
           loader: 'file-loader',
           options: {
-            name: 'static/img/[name].[ext]'
+            name: 'img/[name].[ext]'
           }
         }
       },
@@ -69,7 +69,7 @@ module.exports = {
       filename: 'about.html',
       chunks: ['commons', 'about']
     }),
-    new ExtractTextPlugin("static/css/[name].css")
+    new ExtractTextPlugin("css/[name].css")
   ],
   optimization: {
     // 具体参考：https://webpack.js.org/plugins/split-chunks-plugin/
