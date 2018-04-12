@@ -1,11 +1,28 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const ExtractTextPlugin = require("extract-text-webpack-plugin")
+const CleanWebpackPlugin = require('clean-webpack-plugin')
 const argv = require('minimist')(process.argv.slice(0))
 const mockServer = require('./mock/server')
+const proxyConfig = require('./mock/config.js')
 
 const production = argv.mode === 'production'
+const proxy = argv.env === 'proxy'
+
+// 联调时，数据从代理远端接口来
+let proxyTable = {};
+Object.keys(proxyConfig).forEach((key) => {
+  proxyTable[proxyConfig[key].remote] = {
+    // 远端服务器域名
+    target: 'http://xxx.com',
+    changeOrigin: true,
+    headers: {
+      // 防 referrer 检查
+      referrer: 'http://xxx.com'
+    }
+  }
+});
 
 module.exports = {
   // 让 webpack 知道以哪个模块为入口，做依赖收集
@@ -18,7 +35,7 @@ module.exports = {
   // 具体参考 https://webpack.js.org/concepts/#output
   output: {
     path: path.join(__dirname, '/dist'),
-    filename: 'js/[name].js',
+    filename: production ? 'js/[name].[chunkhash:8].js' : 'js/[name].js',
     publicPath: production ? '//static.360buyimg.com/' : '/'
   },
   resolve: {
@@ -43,7 +60,7 @@ module.exports = {
         use: {
           loader: 'file-loader',
           options: {
-            name: 'img/[name].[ext]'
+            name: production ? 'img/[name].[hash:8].[ext]' : 'img/[name].[ext]'
           }
         }
       },
@@ -69,7 +86,8 @@ module.exports = {
       filename: 'about.html',
       chunks: ['commons', 'about']
     }),
-    new ExtractTextPlugin("css/[name].css")
+    new ExtractTextPlugin(production ? 'css/[name].[chunkhash:8].css' : 'css/[name].css'),
+    new CleanWebpackPlugin(['dist'])
   ],
   optimization: {
     // 具体参考：https://webpack.js.org/plugins/split-chunks-plugin/
@@ -86,8 +104,11 @@ module.exports = {
   },
   // 具体参考：https://webpack.js.org/configuration/dev-server/
   devServer: {
+    // 代理模式
+    proxy: proxy ? proxyTable : {},
     after: (app) => {
-      mockServer(app)
+      // 不在代理模式时才开启本地数据模拟
+      !proxy && mockServer(app)
     }
   }
 }
