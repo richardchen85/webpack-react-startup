@@ -4,7 +4,7 @@
 
 本人正好看了一些相关资料，这里做为笔记记录一下如何从零开始用 `webpack` 搭建一个 `react` 的项目。我默认你已经在电脑上装好了 `nodejs`，并且有基本的命令行相关知识。
 
-> 本文的示例代码可以在 https://github.com/richard-chen-1985/webpack-react-startup 中找到
+> 本文的示例代码可以在 [webpack-react-startup](https://github.com/richard-chen-1985/webpack-react-startup) 中找到
 
 ## 创建项目目录
 
@@ -20,7 +20,7 @@ npm init -y
 
 现在的项目目录结构变成了这样
 
-```
+```nohighlight
 webpack-react-startup
 └ package.json
 ```
@@ -41,25 +41,25 @@ npm i --save react react-dom
 npm i --save-dev webpack webpack-cli webpack-dev-server
 ```
 
-这里 `webpack-cli` 作为一个命令行工具，接收一些参数并用于 `webpack` 的编译器，`webpack-dev-server` 是一个基于 `express` 的开发服务器，还提供了 `live reloading` 的功能，在开发的时候使用它还是很方便的，它还有两个 `hook api` 以方便我们扩展自己想要的功能，这个后面会讲到。
+这里 `webpack-cli` 作为一个命令行工具，接收一些参数并用于 `webpack` 的编译器，`webpack-dev-server` 是一个基于 `express` 的开发服务器，还提供了 `live reloading` 的功能，在开发的时候使用它还是很方便的，它还有两个 `hook api` 以方便扩展自己想要的功能，这个后面会讲到。
 
 ### 安装编译插件
 
-通常我们在写 `react` 应用的时候，都会用到 `es6/7/8` 和 `jsx` 的一些语法，所以我们需要安装能够编译这些语法的插件
+通常在写 `react` 应用的时候，都会用到 `es6/7/8` 和 `jsx` 的一些语法，所以需要安装能够编译这些语法的插件
 
 ```bash
-npm i --save-dev babel-core babel-loader babel-preset-env babel-preset-react html-webpack-plugin
+npm i --save-dev @babel/cli @babel/core @babel/preset-env @babel/preset-react babel-loader html-webpack-plugin style-loader css-loader file-loader
 ```
 
-`babel-x` 插件是为了让 `webpack` 能够使用 `babel` 编译 `es6/7/8` 和 `jsx` 的语法，而 `html-webpack-plugin` 会生成一个 `html` 文件，它的内容自动引入了 `webpack` 产出的 `bundle` 文件。
+`@babel/x` 插件是为了让 `webpack` 能够使用 `babel` 编译 `es6/7/8` 和 `jsx` 的语法，而 `html-webpack-plugin` 会生成一个 `html` 文件，它的内容自动引入了 `webpack` 产出的 `bundle` 文件，`style-loader` 和 `css-loader` 支持引入 `css` 文件，`file-loader` 用于支持引入图片及字体等文件。
 
-依赖安装完过后，我们的项目目录下会多一个 `node_modules` 的文件夹，用于存放安装好的依赖包文件。
+依赖安装完过后，项目目录下会多一个 `node_modules` 的文件夹，用于存放安装好的依赖包文件。
 
 ## 配置 webpack
 
 ### webpack.config.js
 
-`webpakc` 的配置文件名叫 `webpack.config.js`，这个文件需要返回包含 `webpack` 配置项的对象。`webpack` 配置项中最常用到的是 `entry`、`output` 和 `rules`。
+`webpack` 的配置文件名叫 `webpack.config.js`，这个文件需要返回包含 `webpack` 配置项的对象。`webpack` 配置项中最常用到的是 `entry`、`output` 和 `rules`。
 
 ```js
 // webpack.config.js
@@ -78,7 +78,7 @@ module.exports = {
   },
   module: {
     // 使用 babel-loader 编译 es6/7/8 和 jsx 语法
-    // 注意：这里没有配置 preset，而是在 .babelrc 文件里面配置
+    // 注意：这里没有配置 preset，而是在 babel.config.js 文件里面配置
     rules: [
       {
         test: /\.jsx?$/,
@@ -86,11 +86,24 @@ module.exports = {
         use: {
           loader: 'babel-loader'
         }
+      },
+      {
+        test: /.(png|jpg|svg)$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: 'img/[name].[ext]'
+          }
+        }
+      },
+      {
+        test: /.css$/,
+        use: ['style-loader', 'css-loader']
       }
     ]
   },
   plugins: [
-    // 这里我们通常想要指定自己的 html 文件模板，也可以指定生成的 html 的文件名
+    // 这里通常想要指定自己的 html 文件模板，也可以指定生成的 html 的文件名
     // 如果不传参数，会有一个默认的模板文件
     // 具体参考 https://github.com/jantimon/html-webpack-plugin
     new HtmlWebpackPlugin({
@@ -100,24 +113,27 @@ module.exports = {
 }
 ```
 
-### babel preset
+### 配置 babel
 
-```
-// .babelrc
-{
-  "presets": ["env", "react"]
+在项目根目录新建一个 `babel` 配置文件 `babal.config.js`，内容如下：
+
+```js
+module.exports = function () {
+  const presets = ["@babel/preset-env", "@babel/preset-react"];
+  const plugins = [];
+  return { presets, plugins };
 }
 ```
 
-好了，是时候开始写点 `react` 代码了。到了这一步，我们的项目目录现在是这样：
+好了，是时候开始写点 `react` 代码了。到了这一步，项目目录是这样的：
 
-```
+```nohighlight
 webpack-react-startup
 ├ src
 │ ├ index.html
 │ ├ App.js
 │ └ index.js
-├ .babelrc
+├ babel.config.js
 ├ package-lock.json
 └ package.json
 ```
@@ -126,7 +142,7 @@ webpack-react-startup
 
 开发完打包上线可以使用命令 `webpack --mode production`。
 
-命令有点长，可以把它放在 `package.json` 的 `scripts` 块中，这样，我们可以直接运行命令 `npm start` 和 `npm run build` 来执行：
+命令有点长，可以把它放在 `package.json` 的 `scripts` 块中，这样，可以直接运行命令 `npm start` 和 `npm run build` 来执行：
 
 ```json
 // package.json
@@ -140,19 +156,19 @@ webpack-react-startup
 
 ## 配置 devServer
 
-在前文提到的 `webpack-dev-server` 为我们提供了很多 `api` 可以做定制化的需求（可以参考文档：https://webpack.js.org/configuration/dev-server/ ），比如本地模拟异步请求数据。
+在前文提到的 `webpack-dev-server` 提供了很多 `api` 可以做定制化的需求（可以参考文档：https://webpack.js.org/configuration/dev-server/ ），比如本地模拟异步请求数据。
 
-一个项目往往有很多数据需要通过请求异步接口拿到，在项目开始的时候，后端还没有为我们提供这些接口，这时候我们不得不自己造一些假的接口用于调度我们的代码，这时候我们可以使用 `devServer` 的 `after` 选项来为 `devServer` 添加自己的异步接口。
+一个项目往往有很多数据需要通过请求异步接口拿到，在项目开始的时候，后端还没有为提供这些接口，这时候不得不自己造一些假的接口用于调试的代码，这时候可以使用 `devServer` 的 `after` 选项来为 `devServer` 添加自己的异步接口。
 
-首先，我们需要在项目里新建一个 `mock` 文件夹用于存放本地模拟数据相关的代码：
+首先，需要在项目里新建一个 `mock` 文件夹用于存放本地模拟数据相关的代码：
 
-```
+```nohighlight
 webpack-react-startup
 ├ mock
 │ ├ server.js // express 中间件文件，为 devServer 添加接口路由及处理程序
 │ ├ config.js // 路由配置项，接口 URL 地址和本地数据文件的映射
 │ └ index.json // 一个接口模拟数据文件
-
+...
 ```
 
 在 `webpack.config.js` 中配置 `devServer` 选项
@@ -213,13 +229,13 @@ module.exports = function (app) {
 
 ## 多页应用配置
 
-如果我们的应用不止一个页面，我们需要对上面的配置进行改造，主要包括 `entry`、`output` 和 `HtmlWebpackPlugin` 等几项。比如我们增加一个 `about` 页面。
+如果要配置多页应用，需要对上面的配置进行改造，主要包括 `entry`、`output` 和 `HtmlWebpackPlugin` 等几项。比如增加一个 `about` 页面。
 
 ### 修改目录结构
 
 首先来调整一下目录结构，这样看起来更清晰易懂一点：
 
-```
+```nohighlight
 webpack-react-startup
 ├ src
 | ├ components // 放置 react 组件
@@ -230,7 +246,7 @@ webpack-react-startup
 │   ├ about.js
 │   ├ index.html
 │   └ index.js
-├ .babelrc
+├ babel.config.js
 ├ package-lock.json
 └ package.json
 ```
@@ -271,11 +287,11 @@ module.exports = {
 
 ### 公共模块抽离
 
-使用上面的配置，执行 `npm run build` 命令后，我们会在 `dist` 目录找到打包后的结果。但我们发现，`about.js` 和 `index.js` 这两个文件都很大，因为他们各自都包含了 `react` 库相关的代码。这里通常的做法是，将公共模块单独打包到一个文件，在页面中分别引用，这里我们要用到 `webpack` 的另一个插件 `SplitChunksPlugin`。
+使用上面的配置，执行 `npm run build` 命令后，会在 `dist` 目录找到打包后的结果。但是 `about.js` 和 `index.js` 这两个文件都很大，因为他们各自都包含了 `react` 库相关的代码。这里通常的做法是，将公共模块单独打包到一个文件，在页面中分别引用，这里要用到 `webpack` 的另一个插件 `SplitChunksPlugin`。
 
 > 注：在 `webpack` 4.0 以前是用的 `CommonsChunkPlugin`，4.0过后改用了新的 `SplitChunksPlugin`，具体参考：https://webpack.js.org/plugins/split-chunks-plugin/
 
-这是一个内置插件，我们只需要在 `webpack.config.js` 文件中写相应的配置就可以了：
+这是一个内置插件，只需要在 `webpack.config.js` 文件中写相应的配置就可以了：
 
 ```js
 module.exports = {
@@ -307,7 +323,55 @@ module.exports = {
 }
 ```
 
-以上就是关于如何用 `webpack` 搭建一个 `react` 应用的方法，现在就可以开心地写 `react` 代码了。
+## 支持将 css 导出到文件
+
+`css` 样式默认是以创建 `style` 标签的方式，将样式直接写入文档的，但在生产环境希望将 `css` 导出到文件，可以安装 `npm install --save mini-css-extract-plugin`，然后在 `webpack.config.js` 中的 `plugins` 下增加以下配置：
+
+```js
+  new MiniCssExtractPlugin({
+    // Options similar to the same options in webpackOptions.output
+    // both options are optional
+    filename: '[name].css',
+    chunkFilename: '[id].css',
+  })
+```
+
+当然你还可以安装 `sass-loader` 和 `postcss-loader` 以支持样式相关的更多功能。
+
+以上就是关于如何用 `webpack` 搭建一个 `react` 应用的方法，现在就可以开心地写 `react` 代码了。接下来，谈谈部署相关的事情。
+
+## 部署配置
+
+部署到生产环境的代码都是要经过压缩优化的，但是在开发的时候，为了方便在浏览器 `devtool` 中定位问题，一般是不需要压缩的，所以需要将 `webpack.config.js` 中的配置分别对应开发环境和生产环境部署。
+
+首先是环境的区分，方法有很多，本文是通过命令 `webpqck --mode production|development`  来区分。
+
+```js
+const argv = require('minimist')(process.argv.slice(0))
+const production = argv.mode === 'production'
+
+{
+  optimization: {
+    minimize: production,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          parse: { ecma: 8, },
+          compress: { ecma: 5, warnings: false, comparisons: false, inline: 2, },
+          mangle: { safari10: true, },
+          output: { ecma: 5, comments: false, ascii_only: true, },
+        },
+        parallel: true,
+        cache: true,
+        sourceMap: shouldUseSourceMap,
+      }),
+      new OptimizeCSSAssetsPlugin({})
+    ],
+  }
+}
+```
+
+好了，整个配置到这里就结束了，完整的示例放在了 [webpack-react-startup](https://github.com/richard-chen-1985/webpack-react-startup)，欢迎查看及指正。
 
 ## 参考资料
 

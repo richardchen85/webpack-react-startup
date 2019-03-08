@@ -1,8 +1,8 @@
 const path = require('path')
-const webpack = require('webpack')
+const TerserPlugin = require('terser-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const ExtractTextPlugin = require("extract-text-webpack-plugin")
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+const MiniCssExtractPlugin = require("mini-css-extract-plugin")
+const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin")
 const argv = require('minimist')(process.argv.slice(0))
 const mockServer = require('./mock/server')
 const proxyConfig = require('./mock/config.js')
@@ -44,10 +44,30 @@ module.exports = {
       '@static': path.resolve(__dirname, 'src/static'),
     }
   },
+  plugins: [
+    // 这里我们通常想要指定自己的 html 文件模板，也可以指定生成的 html 的文件名
+    // 如果不传参数，会有一个默认的模板文件
+    // 具体参考 https://github.com/jantimon/html-webpack-plugin
+    new HtmlWebpackPlugin({
+      template: './src/pages/index.html',
+      chunks: ['commons', 'index']
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/pages/about.html',
+      filename: 'about.html',
+      chunks: ['commons', 'about']
+    }),
+    new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: production ? 'css/[name].[hash:8].css' : '[name].css',
+      chunkFilename: production ? 'css/[id].[hash:8].css' : '[id].css',
+    })
+  ],
   module: {
     rules: [
       // 使用 babel-loader 编译 es6/7/8 和 jsx 语法
-      // 注意：这里没有配置 preset，而是在 .babelrc 文件里面配置
+      // 注意：这里没有配置 preset，而是在 babel.config.js 文件里面配置
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
@@ -66,30 +86,43 @@ module.exports = {
       },
       {
         test: /.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: 'css-loader'
-        })
+        use: [
+          production ? MiniCssExtractPlugin.loader : 'style-loader',
+          'css-loader',
+          'postcss-loader'
+        ]
       }
     ]
   },
-  plugins: [
-    // 这里我们通常想要指定自己的 html 文件模板，也可以指定生成的 html 的文件名
-    // 如果不传参数，会有一个默认的模板文件
-    // 具体参考 https://github.com/jantimon/html-webpack-plugin
-    new HtmlWebpackPlugin({
-      template: './src/pages/index.html',
-      chunks: ['commons', 'index']
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/pages/about.html',
-      filename: 'about.html',
-      chunks: ['commons', 'about']
-    }),
-    new ExtractTextPlugin(production ? 'css/[name].[chunkhash:8].css' : 'css/[name].css'),
-    new CleanWebpackPlugin(['dist'])
-  ],
   optimization: {
+    minimize: production,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          parse: {
+            ecma: 8,
+          },
+          compress: {
+            ecma: 5,
+            warnings: false,
+            comparisons: false,
+            inline: 2,
+          },
+          mangle: {
+            safari10: true,
+          },
+          output: {
+            ecma: 5,
+            comments: false,
+            ascii_only: true,
+          },
+        },
+        parallel: true,
+        cache: true,
+        sourceMap: true,
+      }),
+      new OptimizeCSSAssetsPlugin({})
+    ],
     // 具体参考：https://webpack.js.org/plugins/split-chunks-plugin/
     splitChunks: {
       cacheGroups: {
