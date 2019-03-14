@@ -11,6 +11,7 @@ react project base on webpack without create-react-app 不用create-react-app搭
 * 更新到 babel7
 * 更新 css 导出到文件插件，并添加 postcss 支持
 * 更新压缩代码插件
+* 添加 eslint
 
 ### v1.0.1
 
