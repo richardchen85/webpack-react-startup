@@ -370,7 +370,7 @@ rules: [
 
 部署到生产环境的代码都是要经过压缩优化的，但是在开发的时候，为了方便在浏览器 `devtool` 中定位问题，一般是不需要压缩的，所以需要将 `webpack.config.js` 中的配置分别对应开发环境和生产环境部署。
 
-首先是环境的区分，方法有很多，本文是通过命令 `webpqck --mode production|development`  来区分。
+首先是环境的区分，方法有很多，本文是通过命令 `webpack --mode production|development`  来区分。
 
 ```js
 const argv = require('minimist')(process.argv.slice(0))
