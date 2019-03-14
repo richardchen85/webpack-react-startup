@@ -66,6 +66,24 @@ module.exports = {
   ],
   module: {
     rules: [
+      // 内置 eslint
+      {
+        enforce: "pre", // 强制在 babel 之前执行
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'eslint-loader',
+          options: {
+            useEslintrc: false,
+            eslintPath: require.resolve('eslint'),
+            baseConfig: {
+              // 同时需要安装：
+              // babel-eslint eslint-plugin-flowtype eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
+              extends: [require.resolve('eslint-config-react-app')]
+            }
+          }
+        }
+      },
       // 使用 babel-loader 编译 es6/7/8 和 jsx 语法
       // 注意：这里没有配置 preset，而是在 babel.config.js 文件里面配置
       {

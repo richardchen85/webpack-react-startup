@@ -340,6 +340,32 @@ module.exports = {
 
 以上就是关于如何用 `webpack` 搭建一个 `react` 应用的方法，现在就可以开心地写 `react` 代码了。接下来，谈谈部署相关的事情。
 
+## 内置 `eslint`
+
+代码风格检查也是非常必要的，还可以预先发现一些 bug，首先安装依赖 `npm install --save-dev eslint-loader eslint eslint-config-react-app`，然后增加 `rule` 配置：
+
+```js
+rules: [
+  {
+    enforce: "pre", // 强制在 babel 之前执行
+    test: /\.jsx?$/,
+    exclude: /node_modules/,
+    use: {
+      loader: 'eslint-loader',
+      options: {
+        useEslintrc: false,
+        eslintPath: require.resolve('eslint'),
+        baseConfig: {
+          // 同时需要安装：
+          // babel-eslint eslint-plugin-flowtype eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
+          extends: [require.resolve('eslint-config-react-app')]
+        }
+      }
+    }
+  }
+]
+```
+
 ## 部署配置
 
 部署到生产环境的代码都是要经过压缩优化的，但是在开发的时候，为了方便在浏览器 `devtool` 中定位问题，一般是不需要压缩的，所以需要将 `webpack.config.js` 中的配置分别对应开发环境和生产环境部署。
