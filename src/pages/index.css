@@ -2,5 +2,5 @@
   display: flex;
   width: 100px;
   height: 100px;
-  background: url('~@static/img/logo.svg') right bottom no-repeat;
+  background: url('~@/static/img/logo.svg') right bottom no-repeat;
 }

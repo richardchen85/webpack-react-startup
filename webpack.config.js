@@ -29,7 +29,7 @@ module.exports = {
   // 具体参考 https://webpack.js.org/concepts/#entry
   entry: {
     index: './src/pages/index.js',
-    about: './src/pages/about.js'
+    //about: './src/pages/about.js'
   },
   // 告诉 webpack 打包好的文件存放在哪里，以及怎么命名
   // 具体参考 https://webpack.js.org/concepts/#output
@@ -40,8 +40,8 @@ module.exports = {
   },
   resolve: {
     alias: {
-      // 别名方便引入资源，如：background: url('~@static/img/logo.svg')
-      '@static': path.resolve(__dirname, 'src/static'),
+      // 别名方便引入资源，如：background: url('@/static/img/logo.svg')
+      '@': path.resolve(__dirname, 'src'),
     }
   },
   plugins: [
@@ -75,7 +75,9 @@ module.exports = {
           loader: 'eslint-loader',
           options: {
             useEslintrc: false,
+            ignore: false,
             eslintPath: require.resolve('eslint'),
+            resolvePluginsRelativeTo: __dirname,
             baseConfig: {
               // 同时需要安装：
               // babel-eslint eslint-plugin-flowtype eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
