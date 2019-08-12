@@ -1,10 +1,20 @@
-# 不用create-react-app搭建基于webpack的react项目
+---
+title: 不用create-react-app搭建基于webpack的react项目
+date: 2018-04-06 15:59:49
+updated: 2019-03-14 15:50:54
+comments: 1
+categories: 前端工程化
+tags: []
+permalink: webpack-react-without-create-react-app
+---
 
 `create-react-app` 是由 `facebook` 官方出品的用于搭建 `react app` 项目的脚手架工具，非常强大且简单易用，无需配置就能搭建一个 `react app`。但也正是由于很多东西它都已经封装好了，而且配置文件还内置在了包里，在项目中不可见，对于很多新手而言，要理解这一套东西还是比较困难。
 
+<!--more-->
+
 本人正好看了一些相关资料，这里做为笔记记录一下如何从零开始用 `webpack` 搭建一个 `react` 的项目。我默认你已经在电脑上装好了 `nodejs`，并且有基本的命令行相关知识。
 
-> 本文的示例代码可以在 [webpack-react-startup](https://github.com/richard-chen-1985/webpack-react-startup) 中找到
+> 本文的完整示例代码可以在 [webpack-react-startup](https://github.com/richard-chen-1985/webpack-react-startup) 中找到，喜欢的话请给个 Star
 
 ## 创建项目目录
 
@@ -48,10 +58,10 @@ npm i --save-dev webpack webpack-cli webpack-dev-server
 通常在写 `react` 应用的时候，都会用到 `es6/7/8` 和 `jsx` 的一些语法，所以需要安装能够编译这些语法的插件
 
 ```bash
-npm i --save-dev @babel/cli @babel/core @babel/preset-env @babel/preset-react babel-loader html-webpack-plugin style-loader css-loader file-loader
+npm i --save-dev @babel/cli @babel/core @babel/preset-env @babel/preset-react @babel/preset-typescript babel-loader html-webpack-plugin style-loader css-loader file-loader
 ```
 
-`@babel/x` 插件是为了让 `webpack` 能够使用 `babel` 编译 `es6/7/8` 和 `jsx` 的语法，而 `html-webpack-plugin` 会生成一个 `html` 文件，它的内容自动引入了 `webpack` 产出的 `bundle` 文件，`style-loader` 和 `css-loader` 支持引入 `css` 文件，`file-loader` 用于支持引入图片及字体等文件。
+`@babel/x` 插件是为了让 `webpack` 能够使用 `babel` 编译 `es6/7/8`、`TypeScript` 和 `jsx` 的语法，而 `html-webpack-plugin` 会生成一个 `html` 文件，它的内容自动引入了 `webpack` 产出的 `bundle` 文件，`style-loader` 和 `css-loader` 支持引入 `css` 文件，`file-loader` 用于支持引入图片及字体等文件。
 
 依赖安装完过后，项目目录下会多一个 `node_modules` 的文件夹，用于存放安装好的依赖包文件。
 
@@ -61,7 +71,7 @@ npm i --save-dev @babel/cli @babel/core @babel/preset-env @babel/preset-react ba
 
 `webpack` 的配置文件名叫 `webpack.config.js`，这个文件需要返回包含 `webpack` 配置项的对象。`webpack` 配置项中最常用到的是 `entry`、`output` 和 `rules`。
 
-```js
+```javascript
 // webpack.config.js
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
@@ -77,11 +87,11 @@ module.exports = {
     filename: 'bundle.js'
   },
   module: {
-    // 使用 babel-loader 编译 es6/7/8 和 jsx 语法
+    // 使用 babel-loader 编译 es6/7/8、ts 和 jsx 语法
     // 注意：这里没有配置 preset，而是在 babel.config.js 文件里面配置
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.(js|mjs|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader'
@@ -117,10 +127,27 @@ module.exports = {
 
 在项目根目录新建一个 `babel` 配置文件 `babal.config.js`，内容如下：
 
-```js
+如果想要使用一些新的语言特性，需要安装以下插件：
+
+* @babel/plugin-proposal-decorators   支持 decorators
+* @babel/plugin-proposal-class-properties  支持类属性
+* @babel/plugin-proposal-object-rest-spread  支持对象解构
+* @babel/plugin-syntax-dynamic-import 支持 import()
+
+```javascript
 module.exports = function () {
-  const presets = ["@babel/preset-env", "@babel/preset-react"];
-  const plugins = [];
+  // 具体参考：https://babeljs.io/docs/en/presets
+  const presets = [
+    "@babel/preset-env",
+    "@babel/preset-react",
+    "@babel/preset-typescript"
+  ];
+  // 具体参考：https://babeljs.io/docs/en/plugins
+  const plugins = [
+    ["@babel/plugin-proposal-decorators", { legacy: true }],
+    ["@babel/plugin-proposal-class-properties", { loose: true }],
+    ["@babel/plugin-proposal-object-rest-spread", { useBuiltIns: true }]
+  ];
   return { presets, plugins };
 }
 ```
@@ -156,7 +183,7 @@ webpack-react-startup
 
 ## 配置 devServer
 
-在前文提到的 `webpack-dev-server` 提供了很多 `api` 可以做定制化的需求（可以参考文档：https://webpack.js.org/configuration/dev-server/ ），比如本地模拟异步请求数据。
+在前文提到的 `webpack-dev-server` 提供了很多 `api` 可以做定制化的需求（可以参考文档：[https://webpack.js.org/configuration/dev-server/](https://webpack.js.org/configuration/dev-server/) ），比如本地模拟异步请求数据。
 
 一个项目往往有很多数据需要通过请求异步接口拿到，在项目开始的时候，后端还没有为提供这些接口，这时候不得不自己造一些假的接口用于调试的代码，这时候可以使用 `devServer` 的 `after` 选项来为 `devServer` 添加自己的异步接口。
 
@@ -173,7 +200,7 @@ webpack-react-startup
 
 在 `webpack.config.js` 中配置 `devServer` 选项
 
-```js
+```javascript
 const mockServer = require('./mock/server')
 module.exports = {
   devServer: {
@@ -186,7 +213,7 @@ module.exports = {
 
 模拟数据相关的代码：
 
-```js
+```javascript
 // mock/config.js
 module.exports = {
   '/api/index': {
@@ -253,7 +280,7 @@ webpack-react-startup
 
 ### 修改webpack.config.js
 
-```js
+```javascript
 // webpack.config.js
 
 module.exports = {
@@ -289,11 +316,11 @@ module.exports = {
 
 使用上面的配置，执行 `npm run build` 命令后，会在 `dist` 目录找到打包后的结果。但是 `about.js` 和 `index.js` 这两个文件都很大，因为他们各自都包含了 `react` 库相关的代码。这里通常的做法是，将公共模块单独打包到一个文件，在页面中分别引用，这里要用到 `webpack` 的另一个插件 `SplitChunksPlugin`。
 
-> 注：在 `webpack` 4.0 以前是用的 `CommonsChunkPlugin`，4.0过后改用了新的 `SplitChunksPlugin`，具体参考：https://webpack.js.org/plugins/split-chunks-plugin/
+> 注：在 `webpack` 4.0 以前是用的 `CommonsChunkPlugin`，4.0过后改用了新的 `SplitChunksPlugin`，具体参考：[https://webpack.js.org/plugins/split-chunks-plugin/](https://webpack.js.org/plugins/split-chunks-plugin/)
 
 这是一个内置插件，只需要在 `webpack.config.js` 文件中写相应的配置就可以了：
 
-```js
+```javascript
 module.exports = {
   plugins: [
     new HtmlWebpackPlugin({
@@ -327,7 +354,7 @@ module.exports = {
 
 `css` 样式默认是以创建 `style` 标签的方式，将样式直接写入文档的，但在生产环境希望将 `css` 导出到文件，可以安装 `npm install --save mini-css-extract-plugin`，然后在 `webpack.config.js` 中的 `plugins` 下增加以下配置：
 
-```js
+```javascript
   new MiniCssExtractPlugin({
     // Options similar to the same options in webpackOptions.output
     // both options are optional
@@ -342,13 +369,13 @@ module.exports = {
 
 ## 内置 `eslint`
 
-代码风格检查也是非常必要的，还可以预先发现一些 bug，首先安装依赖 `npm install --save-dev eslint-loader eslint eslint-config-react-app`，然后增加 `rule` 配置：
+代码风格检查也是非常必要的，还可以预先发现一些 bug，首先安装依赖 `npm install --save-dev eslint-loader eslint eslint-config-react-app @typescript-eslint/eslint-plugin @typescript-eslint/parser`，然后增加 `rule` 配置：
 
-```js
+```javascript
 rules: [
   {
     enforce: "pre", // 强制在 babel 之前执行
-    test: /\.jsx?$/,
+    test: /\.(js|mjs|jsx|ts|tsx)$/,
     exclude: /node_modules/,
     use: {
       loader: 'eslint-loader',
@@ -366,13 +393,21 @@ rules: [
 ]
 ```
 
+## 支持 TypeScript
+
+虽然前面 `babel-loader` 和 `eslint` 的配置都有 `.ts/tsx` 的扩展名，但要想编译 `TypeScript` 文件还需要安装 `npm install --save-dev typescript` 模块。
+
+安装 `react` 声明文件： `npm install --save-dev @types/react @types/react-dom`。
+
+如果要自定义 `TypeScript` 配置，可以在项目根目录新建文件 `tsconfig.json`。
+
 ## 部署配置
 
 部署到生产环境的代码都是要经过压缩优化的，但是在开发的时候，为了方便在浏览器 `devtool` 中定位问题，一般是不需要压缩的，所以需要将 `webpack.config.js` 中的配置分别对应开发环境和生产环境部署。
 
 首先是环境的区分，方法有很多，本文是通过命令 `webpack --mode production|development`  来区分。
 
-```js
+```javascript
 const argv = require('minimist')(process.argv.slice(0))
 const production = argv.mode === 'production'
 
@@ -397,9 +432,9 @@ const production = argv.mode === 'production'
 }
 ```
 
-好了，整个配置到这里就结束了，完整的示例放在了 [webpack-react-startup](https://github.com/richard-chen-1985/webpack-react-startup)，欢迎查看及指正。
+好了，整个配置到这里就结束了，完整的示例放在了 [webpack-react-startup](https://github.com/richard-chen-1985/webpack-react-startup)，欢迎查看及指正，既然已经看完了，说明你对本文很感兴趣，顺便给个 Star 吧。
 
 ## 参考资料
 
-* https://www.youtube.com/watch?v=deyxI-6C2u4
-* https://webpack.js.org/concepts/
+* [https://www.youtube.com/watch?v=deyxI-6C2u4](https://www.youtube.com/watch?v=deyxI-6C2u4)
+* [https://webpack.js.org/concepts/](https://webpack.js.org/concepts/)

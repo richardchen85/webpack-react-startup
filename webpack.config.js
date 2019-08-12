@@ -39,6 +39,7 @@ module.exports = {
     publicPath: production ? '//static.360buyimg.com/' : '/'
   },
   resolve: {
+    extensions: ['.js', '.jsx', '.mjs', '.ts', '.tsx'],
     alias: {
       // 别名方便引入资源，如：background: url('@/static/img/logo.svg')
       '@': path.resolve(__dirname, 'src'),
@@ -69,7 +70,7 @@ module.exports = {
       // 内置 eslint
       {
         enforce: "pre", // 强制在 babel 之前执行
-        test: /\.jsx?$/,
+        test: /\.(js|mjs|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: {
           loader: 'eslint-loader',
@@ -81,15 +82,16 @@ module.exports = {
             baseConfig: {
               // 同时需要安装：
               // babel-eslint eslint-plugin-flowtype eslint-plugin-import eslint-plugin-jsx-a11y eslint-plugin-react
+              // @typescript-eslint/eslint-plugin @typescript-eslint/parser
               extends: [require.resolve('eslint-config-react-app')]
             }
           }
         }
       },
-      // 使用 babel-loader 编译 es6/7/8 和 jsx 语法
+      // 使用 babel-loader 编译 es6/7/8、ts 和 jsx 语法
       // 注意：这里没有配置 preset，而是在 babel.config.js 文件里面配置
       {
-        test: /\.jsx?$/,
+        test: /\.(js|mjs|jsx|ts|tsx)$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader'
