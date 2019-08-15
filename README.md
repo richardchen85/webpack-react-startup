@@ -6,6 +6,11 @@ react project base on webpack without create-react-app 不用create-react-app搭
 
 ## changelog
 
+### v1.0.3
+
+* 支持 TypeScript
+* 更新了一些插件
+
 ### v1.0.2
 
 * 更新到 babel7

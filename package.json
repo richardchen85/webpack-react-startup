@@ -1,6 +1,6 @@
 {
   "name": "webpack-react-startup",
-  "version": "1.0.3-beta",
+  "version": "1.0.3",
   "description": "webpack react startup without create-react-app",
   "main": "index.js",
   "scripts": {
