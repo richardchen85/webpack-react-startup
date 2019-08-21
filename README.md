@@ -6,6 +6,10 @@ react project base on webpack without create-react-app 不用create-react-app搭
 
 ## changelog
 
+### v1.0.4
+* 支持 less
+* 支持 css modules
+
 ### v1.0.3
 
 * 支持 TypeScript

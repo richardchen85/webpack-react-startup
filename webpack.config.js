@@ -110,8 +110,17 @@ module.exports = {
         test: /.css$/,
         use: [
           production ? MiniCssExtractPlugin.loader : 'style-loader',
-          'css-loader',
+          { loader: 'css-loader', options: { modules: true } },
           'postcss-loader'
+        ]
+      },
+      {
+        test: /.less$/,
+        use: [
+          production ? MiniCssExtractPlugin.loader : 'style-loader',
+          { loader: 'css-loader', options: { modules: true } },
+          'postcss-loader',
+          'less-loader'
         ]
       }
     ]

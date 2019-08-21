@@ -363,7 +363,7 @@ module.exports = {
   })
 ```
 
-当然你还可以安装 `sass-loader` 和 `postcss-loader` 以支持样式相关的更多功能。
+当然你还可以配置 `css-loader` 的 `options` 来开启 `css modules`，也可以安装 `sass-loader` 和 `postcss-loader` 以支持样式相关的更多功能。
 
 以上就是关于如何用 `webpack` 搭建一个 `react` 应用的方法，现在就可以开心地写 `react` 代码了。接下来，谈谈部署相关的事情。
 

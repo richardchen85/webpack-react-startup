@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import HelloTs from './HelloTs'
+import styles from './App.less'
 
 function bind(target, key, descriptor) {
   let fn = descriptor.value;
@@ -41,7 +42,7 @@ export default class App extends Component {
   render() {
     return (
       <div>
-        <div className="logo"></div>
+        <div className={styles["logo"]} />
         <p>{this.state.title}</p>
         <p>
           <button onClick={this.btnClick}>点击我</button>
