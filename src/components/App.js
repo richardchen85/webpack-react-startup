@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import HelloTs from './HelloTs'
-import styles from './App.less'
+import React, { Component } from 'react';
+import HelloTs from './HelloTs';
+import styles from './App.less';
 
 function bind(target, key, descriptor) {
   let fn = descriptor.value;
@@ -9,7 +9,12 @@ function bind(target, key, descriptor) {
   return {
     configurable: true,
     get() {
-      if (definingProperty || this === target.prototype || this.hasOwnProperty(key) || typeof fn !== 'function') {
+      if (
+        definingProperty ||
+        this === target.prototype ||
+        this.hasOwnProperty(key) ||
+        typeof fn !== 'function'
+      ) {
         return fn;
       }
 
@@ -23,37 +28,37 @@ function bind(target, key, descriptor) {
         set(value) {
           fn = value;
           delete this[key];
-        }
+        },
       });
       definingProperty = false;
       return boundFn;
     },
     set(value) {
       fn = value;
-    }
+    },
   };
 }
 
 export default class App extends Component {
   state = {
-    title: 'Webpack React Startup'
+    title: 'Webpack React Startup',
   };
 
   render() {
     return (
       <div>
-        <div className={styles["logo"]} />
+        <div className={styles['logo']} />
         <p>{this.state.title}</p>
         <p>
           <button onClick={this.btnClick}>点击我</button>
         </p>
         <HelloTs text="TypeScript" />
       </div>
-    )
+    );
   }
 
   @bind
-  btnClick = (e) => {
+  btnClick = e => {
     alert(e.target.innerText);
-  }
+  };
 }
