@@ -1,0 +1,21 @@
+**/*.md
+**/*.svg
+**/*.ejs
+**/*.html
+.editorconfig
+.gitignore
+.prettierignore
+
+# ide
+.idea
+.vscode
+
+# npm
+npm-error.log
+package.json
+package-lock.json
+yarn.lock
+yarn-error.log
+
+# folder
+dist

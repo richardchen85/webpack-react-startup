@@ -2,11 +2,14 @@
 
 react project base on webpack without create-react-app 不用create-react-app搭建基于webpack的react项目
 
-详情请阅读：https://www.chenliqiang.cn/post/webpack-react-without-create-react-app.html
+详情请阅读：[博客文章](https://www.chenliqiang.cn/post/webpack-react-without-create-react-app.html)
 
 ## changelog
 
+更多版本请查看：[版本发布记录](https://github.com/richard-chen-1985/webpack-react-startup/releases)
+
 ### v1.0.4
+
 * 支持 less
 * 支持 css modules
 
