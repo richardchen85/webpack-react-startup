@@ -1,6 +1,6 @@
 module.exports = {
   '/api/index': {
     local: '/index.js',
-    remote: '/api/index'
-  }
-}
+    remote: '/api/index',
+  },
+};

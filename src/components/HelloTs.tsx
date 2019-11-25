@@ -1,8 +1,8 @@
-import React from 'react'
-import styles from './HelloTs.less'
+import React from 'react';
+import styles from './HelloTs.less';
 
 export interface HelloTsProps {
-  text: string
+  text: string;
 }
 
 function HelloTs(props: HelloTsProps) {
@@ -10,7 +10,7 @@ function HelloTs(props: HelloTsProps) {
     <div className={styles['helloTs']}>
       <span>{props.text}</span>
     </div>
-  )
+  );
 }
 
 export default HelloTs;
