@@ -14,7 +14,7 @@ permalink: webpack-react-without-create-react-app
 
 本人正好看了一些相关资料，这里做为笔记记录一下如何从零开始用 `webpack` 搭建一个 `react` 的项目。我默认你已经在电脑上装好了 `nodejs`，并且有基本的命令行相关知识。
 
-> 本文的完整示例代码可以在 [webpack-react-startup](https://github.com/richard-chen-1985/webpack-react-startup) 中找到，喜欢的话请给个 Star
+> 本文的完整示例代码可以在 [webpack-react-startup](https://github.com/richardchen85/webpack-react-startup) 中找到，喜欢的话请给个 Star
 
 ## 创建项目目录
 
@@ -69,7 +69,7 @@ npm i --save-dev @babel/cli @babel/core @babel/preset-env @babel/preset-react @b
 
 ### webpack.config.js
 
-`webpack` 的配置文件名叫 `webpack.config.js`，这个文件需要返回包含 `webpack` 配置项的对象。`webpack` 配置项中最常用到的是 `entry`、`output` 和 `rules`。
+`webpack` 的配置文件名叫 `webpack.config.js`，这个文件需要返回包含 `webpack` 配置项的对象。`webpack` 配置项中最常用到的是 `entry`、`output` 和 `rules`。
 
 ```javascript
 // webpack.config.js
@@ -80,7 +80,7 @@ module.exports = {
   // 让 webpack 知道以哪个模块为入口，做依赖收集
   // 具体参考 https://webpack.js.org/concepts/#entry
   entry: './src/index.js',
-  // 告诉 webpack 打包好的文件存放在哪里，以及怎么命名
+  // 告诉 webpack 打包好的文件存放在哪里，以及怎么命名
   // 具体参考 https://webpack.js.org/concepts/#output
   output: {
     path: path.join(__dirname, '/dist'),
@@ -193,7 +193,7 @@ webpack-react-startup
 webpack-react-startup
 ├ mock
 │ ├ server.js // express 中间件文件，为 devServer 添加接口路由及处理程序
-│ ├ config.js // 路由配置项，接口 URL 地址和本地数据文件的映射
+│ ├ config.js // 路由配置项，接口 URL 地址和本地数据文件的映射
 │ └ index.json // 一个接口模拟数据文件
 ...
 ```
@@ -312,7 +312,7 @@ module.exports = {
 }
 ```
 
-### 公共模块抽离
+### 公共模块抽离
 
 使用上面的配置，执行 `npm run build` 命令后，会在 `dist` 目录找到打包后的结果。但是 `about.js` 和 `index.js` 这两个文件都很大，因为他们各自都包含了 `react` 库相关的代码。这里通常的做法是，将公共模块单独打包到一个文件，在页面中分别引用，这里要用到 `webpack` 的另一个插件 `SplitChunksPlugin`。
 
@@ -432,7 +432,7 @@ const production = argv.mode === 'production'
 }
 ```
 
-好了，整个配置到这里就结束了，完整的示例放在了 [webpack-react-startup](https://github.com/richard-chen-1985/webpack-react-startup)，欢迎查看及指正，既然已经看完了，说明你对本文很感兴趣，顺便给个 Star 吧。
+好了，整个配置到这里就结束了，完整的示例放在了 [webpack-react-startup](https://github.com/richardchen85/webpack-react-startup)，欢迎查看及指正，既然已经看完了，说明你对本文很感兴趣，顺便给个 Star 吧。
 
 ## 参考资料
 
