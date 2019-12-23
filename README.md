@@ -6,7 +6,7 @@ react project base on webpack without create-react-app 不用create-react-app搭
 
 ## changelog
 
-更多版本请查看：[版本发布记录](https://github.com/richard-chen-1985/webpack-react-startup/releases)
+更多版本请查看：[版本发布记录](https://github.com/richardchen85/webpack-react-startup/releases)
 
 ### v1.0.4
 
