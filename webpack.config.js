@@ -1,18 +1,21 @@
 const path = require('path');
+const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer/lib/BundleAnalyzerPlugin');
 const argv = require('minimist')(process.argv.slice(0));
 const mockServer = require('./mock/server');
 const proxyConfig = require('./mock/config.js');
 
 const production = argv.mode === 'production';
 const proxy = argv.env === 'proxy';
+const analyze = argv.analyze;
 
 // 联调时，数据从代理远端接口来
 let proxyTable = {};
-Object.keys(proxyConfig).forEach(key => {
+Object.keys(proxyConfig).forEach((key) => {
   proxyTable[proxyConfig[key].remote] = {
     // 远端服务器域名
     target: 'http://xxx.com',
@@ -64,7 +67,16 @@ module.exports = {
       filename: production ? 'css/[name].[hash:8].css' : '[name].css',
       chunkFilename: production ? 'css/[id].[hash:8].css' : '[id].css',
     }),
-  ],
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(production ? 'production' : 'development'),
+    }),
+    analyze &&
+      new BundleAnalyzerPlugin({
+        generateReportFile: true, // 开启报告生成功能
+        reportDepth: 2, // 裁剪深度 2
+        reportDir: process.cwd(),
+      }),
+  ].filter(Boolean),
   module: {
     rules: [
       // 内置 eslint
@@ -98,7 +110,16 @@ module.exports = {
         },
       },
       {
-        test: /.(png|jpg|svg)$/,
+        test: /.(png|jpe?g|svg|gif|webp|ico)(\?.*)?$/,
+        use: {
+          loader: 'file-loader',
+          options: {
+            name: production ? 'img/[name].[hash:8].[ext]' : 'img/[name].[ext]',
+          },
+        },
+      },
+      {
+        test: /\.(eot|woff|woff2|ttf)(\?.*)?$/,
         use: {
           loader: 'file-loader',
           options: {
@@ -168,9 +189,10 @@ module.exports = {
   },
   // 具体参考：https://webpack.js.org/configuration/dev-server/
   devServer: {
+    quiet: true,
     // 代理模式
     proxy: proxy ? proxyTable : {},
-    after: app => {
+    after: (app) => {
       // 不在代理模式时才开启本地数据模拟
       !proxy && mockServer(app);
     },
